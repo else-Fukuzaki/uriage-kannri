@@ -1,0 +1,21 @@
+# Git関連
+.git
+.gitignore
+
+# Docker関連
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# 開発ツール関連
+.vscode/
+.idea/
+*.log
+
+# OS関連
+.DS_Store
+Thumbs.db
+
+# 一時ファイル
+*.tmp
+*.temp

@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  uriage-kannri:
+    build: .
+    container_name: uriage-kannri-app
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/usr/share/nginx/html:ro  # 開発時のホットリロード用
+    restart: unless-stopped
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
