@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>売上管理システム</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- ヘッダー -->
+        <header class="header">
+            <div class="header-content">
+                <h1>💰 売上管理システム</h1>
+                <div class="header-controls">
+                    <button id="themeToggle" class="theme-toggle">🌙 ダークモード</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="main-content">
+            <!-- タブナビゲーション -->
+            <div class="tabs">
+                <button class="tab-button active" data-tab="input">📝 入力</button>
+                <button class="tab-button" data-tab="data">📊 データ一覧</button>
+                <button class="tab-button" data-tab="archive">📦 アーカイブ</button>
+                <button class="tab-button" data-tab="analytics">📈 分析</button>
+            </div>
+
+            <!-- タブ1: 入力フォーム -->
+            <section id="input-tab" class="tab-content active">
+                <div class="form-section">
+                    <h2>データ入力</h2>
+                    <form id="dataForm" class="form-group">
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label for="date">日付 *</label>
+                                <input type="date" id="date" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="sales">売上 *</label>
+                                <input type="number" id="sales" min="0" step="0.01" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label for="cost">コスト *</label>
+                                <input type="number" id="cost" min="0" step="0.01" required>
+                            </div>
+                            <div class="form-field">
+                                <label for="category">カテゴリー</label>
+                                <input type="text" id="category" placeholder="例：商品A">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-field full-width">
+                                <label for="memo">メモ</label>
+                                <textarea id="memo" rows="3" placeholder="備考を入力"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">保存</button>
+                            <button type="reset" class="btn btn-secondary">リセット</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- タブ2: データ一覧 -->
+            <section id="data-tab" class="tab-content">
+                <div class="data-section">
+                    <h2>データ一覧</h2>
+                    
+                    <!-- フィルター -->
+                    <div class="filter-section">
+                        <div class="filter-row">
+                            <div class="filter-field">
+                                <label for="filterStartDate">開始日付</label>
+                                <input type="date" id="filterStartDate">
+                            </div>
+                            <div class="filter-field">
+                                <label for="filterEndDate">終了日付</label>
+                                <input type="date" id="filterEndDate">
+                            </div>
+                            <div class="filter-field">
+                                <label for="filterCategory">カテゴリー</label>
+                                <input type="text" id="filterCategory" placeholder="カテゴリーで検索">
+                            </div>
+                            <div class="filter-actions">
+                                <button id="filterBtn" class="btn btn-primary">検索</button>
+                                <button id="resetFilterBtn" class="btn btn-secondary">リセット</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 一括操作 -->
+                    <div class="bulk-actions">
+                        <label>
+                            <input type="checkbox" id="selectAllCheckbox">
+                            すべて選択
+                        </label>
+                        <button id="deleteSelectedBtn" class="btn btn-danger" disabled>選択項目を削除</button>
+                        <button id="archiveSelectedBtn" class="btn btn-warning" disabled>選択項目をアーカイブ</button>
+                    </div>
+
+                    <!-- データテーブル -->
+                    <div class="table-wrapper">
+                        <table id="dataTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" class="select-row-checkbox"></th>
+                                    <th>日付</th>
+                                    <th>売上</th>
+                                    <th>コスト</th>
+                                    <th>利益</th>
+                                    <th>利益率</th>
+                                    <th>カテゴリー</th>
+                                    <th>メモ</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="noDataMessage" class="no-data">データがありません</div>
+                </div>
+            </section>
+
+            <!-- タブ3: アーカイブ -->
+            <section id="archive-tab" class="tab-content">
+                <div class="archive-section">
+                    <h2>アーカイブ管理</h2>
+
+                    <!-- アーカイブフィルター -->
+                    <div class="filter-section">
+                        <div class="filter-row">
+                            <div class="filter-field">
+                                <label for="archiveFilterStartDate">開始日付</label>
+                                <input type="date" id="archiveFilterStartDate">
+                            </div>
+                            <div class="filter-field">
+                                <label for="archiveFilterEndDate">終了日付</label>
+                                <input type="date" id="archiveFilterEndDate">
+                            </div>
+                            <div class="filter-actions">
+                                <button id="archiveFilterBtn" class="btn btn-primary">検索</button>
+                                <button id="resetArchiveFilterBtn" class="btn btn-secondary">リセット</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 一括操作 -->
+                    <div class="bulk-actions">
+                        <label>
+                            <input type="checkbox" id="selectAllArchiveCheckbox">
+                            すべて選択
+                        </label>
+                        <button id="restoreSelectedBtn" class="btn btn-info" disabled>選択項目を復元</button>
+                        <button id="deleteArchiveSelectedBtn" class="btn btn-danger" disabled>選択項目を削除</button>
+                    </div>
+
+                    <!-- アーカイブテーブル -->
+                    <div class="table-wrapper">
+                        <table id="archiveTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" class="select-archive-row-checkbox"></th>
+                                    <th>日付</th>
+                                    <th>売上</th>
+                                    <th>コスト</th>
+                                    <th>利益</th>
+                                    <th>利益率</th>
+                                    <th>カテゴリー</th>
+                                    <th>メモ</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="archiveTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="noArchiveDataMessage" class="no-data">アーカイブデータがありません</div>
+                </div>
+            </section>
+
+            <!-- タブ4: 分析 -->
+            <section id="analytics-tab" class="tab-content">
+                <div class="analytics-section">
+                    <h2>分析・レポート</h2>
+
+                    <!-- サマリーカード -->
+                    <div class="summary-cards">
+                        <div class="card">
+                            <h3>総売上</h3>
+                            <p id="totalSales" class="value">¥0</p>
+                        </div>
+                        <div class="card">
+                            <h3>総コスト</h3>
+                            <p id="totalCost" class="value">¥0</p>
+                        </div>
+                        <div class="card">
+                            <h3>総利益</h3>
+                            <p id="totalProfit" class="value">¥0</p>
+                        </div>
+                        <div class="card">
+                            <h3>平均利益率</h3>
+                            <p id="avgProfitMargin" class="value">0%</p>
+                        </div>
+                    </div>
+
+                    <!-- グラフ -->
+                    <div class="chart-container">
+                        <div class="chart">
+                            <h3>月別売上・コスト</h3>
+                            <canvas id="monthlyChart"></canvas>
+                        </div>
+                        <div class="chart">
+                            <h3>カテゴリー別売上</h3>
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 詳細統計 -->
+                    <div class="statistics">
+                        <h3>詳細統計</h3>
+                        <table id="statisticsTable" class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>項目</th>
+                                    <th>値</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>データ件数</td>
+                                    <td id="dataCount">0</td>
+                                </tr>
+                                <tr>
+                                    <td>平均売上/日</td>
+                                    <td id="avgSalesPerDay">¥0</td>
+                                </tr>
+                                <tr>
+                                    <td>最大売上</td>
+                                    <td id="maxSales">¥0</td>
+                                </tr>
+                                <tr>
+                                    <td>最小売上</td>
+                                    <td id="minSales">¥0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- モーダル（編集用） -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>データ編集</h2>
+            <form id="editForm" class="form-group">
+                <input type="hidden" id="editId">
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="editDate">日付 *</label>
+                        <input type="date" id="editDate" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="editSales">売上 *</label>
+                        <input type="number" id="editSales" min="0" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="editCost">コスト *</label>
+                        <input type="number" id="editCost" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="editCategory">カテゴリー</label>
+                        <input type="text" id="editCategory">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-field full-width">
+                        <label for="editMemo">メモ</label>
+                        <textarea id="editMemo" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">更新</button>
+                    <button type="button" class="btn btn-secondary" id="cancelEditBtn">キャンセル</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 削除確認モーダル -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content modal-small">
+            <h2>削除確認</h2>
+            <p id="deleteMessage"></p>
+            <div class="form-actions">
+                <button id="confirmDeleteBtn" class="btn btn-danger">削除</button>
+                <button id="cancelDeleteBtn" class="btn btn-secondary">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="db.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
